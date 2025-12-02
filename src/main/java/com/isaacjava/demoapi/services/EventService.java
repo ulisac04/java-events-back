@@ -1,6 +1,7 @@
 package com.isaacjava.demoapi.services;
 
 import com.isaacjava.demoapi.domain.Event;
+import com.isaacjava.demoapi.exception.ResourceNotFoundException;
 import com.isaacjava.demoapi.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,5 +22,12 @@ public class EventService implements IEventService {
     @Override
     public Event save(Event event) {
         return eventRepository.save(event);
+    }
+
+    @Override
+    public Event findById(Long id) {
+        return eventRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Event not found with id: " + id)
+        );
     }
 }
