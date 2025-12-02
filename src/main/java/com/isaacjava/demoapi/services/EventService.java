@@ -30,4 +30,10 @@ public class EventService implements IEventService {
                 ()-> new ResourceNotFoundException("Event not found with id: " + id)
         );
     }
+
+    @Override
+    public void deleteById(Long id) {
+        Event event = this.findById(id);
+        eventRepository.delete(event);
+    }
 }

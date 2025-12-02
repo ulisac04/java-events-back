@@ -46,4 +46,20 @@ public class EventController {
         EventResponseDto responseDto = eventMapper.toEventResponseDto(event);
         return ResponseEntity.ok(responseDto);
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id,
+                                                        @Valid @RequestBody EventRequestDto eventRequestDto) {
+        Event existingEvent = eventService.findById(id);
+        eventMapper.updateEventFromDto(eventRequestDto, existingEvent);
+        Event updatedEvent = eventService.save(existingEvent);
+        EventResponseDto responseDto = eventMapper.toEventResponseDto(updatedEvent);
+        return ResponseEntity.ok(responseDto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
+        eventService.deleteById(id);
+        return ResponseEntity.noContent().build();
+    }
 }
