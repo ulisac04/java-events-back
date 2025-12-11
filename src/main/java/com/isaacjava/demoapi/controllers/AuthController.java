@@ -38,33 +38,5 @@ public class AuthController {
         return new ResponseEntity<>(new JwtAuthResponseDto(token), HttpStatus.OK);
     }
 
-    public String getUsernameFromJwt(String token) {
-        Claims claims = Jwts.parserBuilder()
-                .setSigningKey(jwtGenerator.getSigningKey())
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-        return claims.getSubject(); // Implementar según sea necesario
-    }
 
-    public boolean validateToken(String token) {
-            try {
-                Jwts.parserBuilder()
-                        .setSigningKey(jwtGenerator.getSigningKey())
-                        .build()
-                        .parseClaimsJws(token); // If no exception is thrown, token is valid
-                return true;
-            } catch (io.jsonwebtoken.MalformedJwtException e) {
-                System.out.println("Invalid JWT token: " + e.getMessage());
-            } catch (io.jsonwebtoken.ExpiredJwtException e) {
-                System.out.println("JWT token is expired: " + e.getMessage());
-            } catch (io.jsonwebtoken.UnsupportedJwtException e) {
-                System.out.println("JWT token is unsupported: " + e.getMessage());
-            } catch (IllegalArgumentException e) {
-                System.out.println("JWT claims string is empty: " + e.getMessage());
-            } catch (io.jsonwebtoken.security.SignatureException e) {
-                System.out.println("Signature validation failed: " + e.getMessage());
-            }
-            return false;
-        }
 }

@@ -1,5 +1,6 @@
 package com.isaacjava.demoapi.config.jwt;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -36,5 +37,35 @@ public class JwtGenerator {
                .setExpiration(expirationDate)
                 .signWith(getSigningKey(), SignatureAlgorithm.HS512)
                 .compact();
+    }
+
+    public String getUsernameFromJwt(String token) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.getSubject(); // Implementar según sea necesario
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder()
+                    .setSigningKey(getSigningKey())
+                    .build()
+                    .parseClaimsJws(token); // If no exception is thrown, token is valid
+            return true;
+        } catch (io.jsonwebtoken.MalformedJwtException e) {
+            System.out.println("Invalid JWT token: " + e.getMessage());
+        } catch (io.jsonwebtoken.ExpiredJwtException e) {
+            System.out.println("JWT token is expired: " + e.getMessage());
+        } catch (io.jsonwebtoken.UnsupportedJwtException e) {
+            System.out.println("JWT token is unsupported: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            System.out.println("JWT claims string is empty: " + e.getMessage());
+        } catch (io.jsonwebtoken.security.SignatureException e) {
+            System.out.println("Signature validation failed: " + e.getMessage());
+        }
+        return false;
     }
 }
