@@ -1,5 +1,7 @@
 package com.isaacjava.demoapi.controllers;
 
+import com.isaacjava.demoapi.config.jwt.JwtGenerator;
+import com.isaacjava.demoapi.dto.JwtAuthResponseDto;
 import com.isaacjava.demoapi.dto.LoginDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,9 +19,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
     private final AuthenticationManager authenticationManager;
+    private final JwtGenerator jwtGenerator;
 
     @PostMapping("/login")
-    public ResponseEntity<String> authenticateUser(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<JwtAuthResponseDto> authenticateUser(@RequestBody LoginDto loginDto) {
         Authentication authentication = authenticationManager.authenticate(
                 new org.springframework.security.authentication.UsernamePasswordAuthenticationToken(
                         loginDto.getUsername(),
@@ -27,6 +30,9 @@ public class AuthController {
                 )
         );
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        return new ResponseEntity<>("User authenticated successfully", HttpStatus.OK);
+
+        String token = jwtGenerator.generateToken(authentication);
+
+        return new ResponseEntity<>(new JwtAuthResponseDto(token), HttpStatus.OK);
     }
 }
