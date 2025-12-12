@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,17 +24,15 @@ public class EventController {
     private final IEventMapper eventMapper;
 
     @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public List<EventResponseDto> getAllEvents() {
         List<Event> events = eventService.findAll();
         return eventMapper.toEventResponseDtoList(events);
     }
 
     @PostMapping
+    @PreAuthorize("hasAnyRole('ADMIN')")
     public ResponseEntity<EventResponseDto> createEvent(@Valid @RequestBody EventRequestDto eventRequestDto) {
-        System.out.println("========================");
-        System.out.println(eventRequestDto);
-        System.out.println("========================");
-
         Event event = eventMapper.toEntity(eventRequestDto);
         Event savedEvent = eventService.save(event);
         EventResponseDto responseDto = eventMapper.toEventResponseDto(savedEvent);
@@ -41,6 +40,7 @@ public class EventController {
         return new ResponseEntity<>(responseDto, HttpStatus.CREATED);
     }
     @GetMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<EventResponseDto> getEventById(@PathVariable Long id) {
         Event event = eventService.findById(id);
         EventResponseDto responseDto = eventMapper.toEventResponseDto(event);
@@ -48,6 +48,7 @@ public class EventController {
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<EventResponseDto> updateEvent(@PathVariable Long id,
                                                         @Valid @RequestBody EventRequestDto eventRequestDto) {
         Event existingEvent = eventService.findById(id);
@@ -58,6 +59,7 @@ public class EventController {
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER')")
     public ResponseEntity<Void> deleteEvent(@PathVariable Long id) {
         eventService.deleteById(id);
         return ResponseEntity.noContent().build();
